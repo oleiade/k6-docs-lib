@@ -21,6 +21,13 @@ jobs:
           VERSIONS=$(.github/scripts/sync.sh)
           echo "Versions to build: ${VERSIONS:-none}"
           echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
+      - name: Ensure doc-bundles release exists
+        if: steps.check.outputs.versions != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view doc-bundles >/dev/null 2>&1 || \
+            gh release create doc-bundles --title "Doc Bundles" --notes "Auto-generated documentation bundles for k6 versions."
       - name: Build bundles
         if: steps.check.outputs.versions != ''
         env:
