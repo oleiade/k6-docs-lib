@@ -5,6 +5,9 @@ on:
     - cron: '3 */3 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -21,6 +24,13 @@ jobs:
           VERSIONS=$(.github/scripts/sync.sh)
           echo "Versions to build: ${VERSIONS:-none}"
           echo "versions=$VERSIONS" >> "$GITHUB_OUTPUT"
+      - name: Ensure doc-bundles release exists
+        if: steps.check.outputs.versions != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view doc-bundles &>/dev/null || \
+            gh release create doc-bundles --title "Doc Bundles" --notes "Pre-built documentation bundles for k6 versions."
       - name: Build bundles
         if: steps.check.outputs.versions != ''
         env:
