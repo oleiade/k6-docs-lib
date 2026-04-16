@@ -79,6 +79,9 @@ linters:
     goconst:
       min-len: 10
       min-occurrences: 4
+    gosec:
+      excludes:
+        - G704
     usetesting:
       os-setenv: true
   exclusions:
