@@ -1,0 +1,116 @@
+# v2.10.1
+version: "2"
+linters:
+  default: none
+  enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - canonicalheader
+    - contextcheck
+    - copyloopvar
+    - cyclop
+    - dogsled
+    - dupl
+    - durationcheck
+    - errcheck
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    - fatcontext
+    - forbidigo
+    - forcetypeassert
+    - funlen
+    - gocheckcompilerdirectives
+    - gochecknoglobals
+    - gocognit
+    - goconst
+    - gocritic
+    - gomoddirectives
+    - goprintffuncname
+    - gosec
+    - govet
+    - importas
+    - ineffassign
+    - interfacebloat
+    - lll
+    - makezero
+    - misspell
+    - modernize
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnil
+    - noctx
+    - nolintlint
+    - nosprintfhostport
+    - paralleltest
+    - prealloc
+    - predeclared
+    - promlinter
+    - reassign
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - tparallel
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+    - usetesting
+    - wastedassign
+    - whitespace
+  settings:
+    cyclop:
+      max-complexity: 25
+    dupl:
+      threshold: 150
+    exhaustive:
+      default-signifies-exhaustive: true
+    forbidigo:
+      forbid:
+        - pattern: ^(fmt\\.Print(|f|ln)|print|println)$
+    funlen:
+      lines: 80
+      statements: 60
+    goconst:
+      min-len: 10
+      min-occurrences: 4
+    usetesting:
+      os-setenv: true
+  exclusions:
+    generated: lax
+    rules:
+      - linters:
+          - canonicalheader
+          - cyclop
+          - dupl
+          - forbidigo
+          - forcetypeassert
+          - funlen
+          - gocognit
+          - lll
+          - gosec
+        path: _(test|gen)\.go
+      - linters:
+          - forbidigo
+        path: cmd/prepare/.*\.go
+      - linters:
+          - revive
+        text: avoid meaningless package names
+      - linters:
+          - revive
+        text: avoid package names that conflict with Go standard library
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax

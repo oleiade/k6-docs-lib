@@ -1,0 +1,69 @@
+---
+title: 'generateKey'
+description: 'generateKey generates a new key.'
+weight: 05
+---
+
+# generateKey
+
+The `generateKey()` generates a new cryptographic key and returns it as a [CryptoKey](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/cryptokey) object or a [CryptoKeyPair](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/cryptokeypair) object that can be used with the Web Crypto API.
+
+## Usage
+
+```
+generateKey(algorithm, extractable, keyUsages)
+```
+
+## Parameters
+
+| Name          | Type                                                       | Description                                                                                                                                                      |
+| :------------ | :--------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `algorithm`   | a `string` or algorithm object with a single `name` string | The type of key to generate. It can be either a string with any of the currently supported algorithms as a value or any of the generation key parameter objects. |
+| `extractable` | `boolean`                                                  | Whether the key can be exported using [exportKey](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/subtlecrypto/exportkey).                        |
+| `keyUsages`   | `Array<string>`                                            | An array of strings describing what operations can be performed with the key. Key usages could vary depending on the algorithm.                                  |
+
+### Supported algorithms
+
+
+| AES-CBC                                                                                        | AES-CTR                                                                                        | AES-GCM                                                                                        | AES-KW | ECDH                                                                                                          | ECDSA                                                                                         | HMAC                                                                                                    | RSA-OAEP                                                                                                          | RSASSA-PKCS1-v1_5                                                                                                 | RSA-PSS                                                                                                           |
+| :--------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------- | :----- | :------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ | :---------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| ✅ [AesCbcParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/aescbcparams) | ✅ [AesCtrParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/aesctrparams) | ✅ [AesGcmParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/aesgcmparams) | ❌     | ✅ [EcdhKeyDeriveParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/ecdhkeyderiveparams/) | ✅ [EcdsaParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/ecdsaparams/) | ✅ [HmacKeyGenParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/hmackeygenparams/) | ✅ [RsaHashedImportParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/rsahashedimportparams/) | ✅ [RsaHashedImportParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/rsahashedimportparams/) | ✅ [RsaHashedImportParams](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/rsahashedimportparams/) |
+
+
+## Return Value
+
+A `Promise` that resolves with the generated key as a [CryptoKey](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/cryptokey) object or a [CryptoKeyPair](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/cryptokeypair) object.
+
+### Algorithm specific input
+
+|                        | HMAC                                                                                                  | AES                                                                                                 | ECDH                                                                                              | ECDSA                                                                                             | RSA-OAEP                                                                                                        | RSASSA-PKCS1-v1_5                                                                                               | RSA-PSS                                                                                                         |
+| :--------------------- | :---------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Parameters type to use | [`HmacKeyGenParams`](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/hmackeygenparams) | [`AesKeyGenParams`](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/aeskeygenparams) | [`EcKeyGenParams`](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/eckeygenparams) | [`EcKeyGenParams`](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/eckeygenparams) | [`RSAHashedKeyGenParams`](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/rsahashedkeygenparams) | [`RSAHashedKeyGenParams`](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/rsahashedkeygenparams) | [`RSAHashedKeyGenParams`](https://grafana.com/docs/k6/<K6_VERSION>/javascript-api/crypto/rsahashedkeygenparams) |
+| Possible key usages    | `sign`, `verify`                                                                                      | `encrypt`, `decrypt`                                                                                | `deriveKey`, `deriveBits`                                                                         | `sign`, `verify`                                                                                  | `encrypt`, `decrypt`                                                                                            | `sign`, `verify`                                                                                                | `sign`, `verify`                                                                                                |
+
+## Throws
+
+| Type          | Description                                                                                   |
+| :------------ | :-------------------------------------------------------------------------------------------- |
+| `SyntaxError` | Raised when the `keyUsages` parameter is empty, but the key is of type `secret` or `private`. |
+
+## Example
+
+{{< code >}}
+
+```javascript
+export default async function () {
+  const key = await crypto.subtle.generateKey(
+    {
+      name: 'AES-CBC',
+      length: 256,
+    },
+    true,
+    ['encrypt', 'decrypt']
+  );
+
+  console.log(JSON.stringify(key));
+}
+```
+
+{{< /code >}}
