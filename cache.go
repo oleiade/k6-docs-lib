@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/fs"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -265,11 +266,22 @@ func extract(afs fsext.Fs, r io.Reader, destDir string) error {
 }
 
 // doRequest performs an HTTP request with the given context.
+// It validates the URL scheme to prevent SSRF with arbitrary protocols.
 func doRequest(ctx context.Context, client *http.Client, method, reqURL string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, method, reqURL, nil)
+	parsed, err := url.ParseRequestURI(reqURL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid URL %q: %w", reqURL, err)
+	}
+
+	if parsed.Scheme != "https" && parsed.Scheme != "http" {
+		return nil, fmt.Errorf("unsupported URL scheme %q", parsed.Scheme)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, parsed.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return client.Do(req)
 }
 
